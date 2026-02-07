@@ -10,8 +10,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onBack;
   final Widget? title;
   final bool showBackButton;
-  final bool showNotification;
   final List<Widget> actions;
+  final VoidCallback? onNotificationPressed;
+  final VoidCallback? onSearchPressed;
 
   const CustomAppBar({
     super.key,
@@ -19,14 +20,15 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.onBack,
     this.actions = const [],
     this.showBackButton = false,
-    this.showNotification = false,
+    this.onNotificationPressed,
+    this.onSearchPressed,
   });
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: ColorManager.colorPrimary,
-      surfaceTintColor: ColorManager.colorPrimary,
+      backgroundColor: ColorManager.colorSecondary,
+      surfaceTintColor: ColorManager.colorSecondary,
       elevation: 0,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
@@ -34,9 +36,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           topRight: Radius.circular(20),
         ),
       ),
-      leadingWidth: showBackButton || showNotification
+      leadingWidth: showBackButton
           ? AppSize.sWidth * 0.15
-          : AppSize.sWidth * 0.23,
+          : AppSize.sWidth * 0.3,
       leading: showBackButton
           ? IconButton(
               icon: Icon(
@@ -46,31 +48,53 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               ),
               onPressed: onBack ?? () => context.pop(),
             )
-          : showNotification
-          ? InkWell(
-              borderRadius: BorderRadius.circular(555),
-              splashColor: ColorManager.colorPrimary,
-              onTap: () {
-                // context.router.push(const NotificationsRoute());
-              },
-              child: Padding(
-                padding: EdgeInsets.all(AppSize.s14),
-                child: SvgPicture.asset(
-                  IconsAssets.notificationIcon,
-                  colorFilter: ColorFilter.mode(
-                    ColorManager.colorWhite,
-                    BlendMode.srcIn,
-                  ),
-                  width: AppSize.s22,
-                  height: AppSize.s22,
-                ),
-              ),
-            )
-          : SizedBox(),
+          : Padding(
+              padding: EdgeInsets.all(AppSize.s6),
+              child: Image.asset(ImageAssets.logoImage),
+            ),
       title: title,
       titleSpacing: AppSize.s4,
-      centerTitle: true,
-      actions: actions,
+      centerTitle: false,
+      actions: [
+        ...actions,
+        if (onSearchPressed != null) ...[
+          Container(
+            width: AppSize.s40,
+            height: AppSize.s40,
+            padding: EdgeInsets.all(AppSize.s8),
+            child: SvgPicture.asset(
+              IconsAssets.searchIcon,
+              colorFilter: const ColorFilter.mode(
+                ColorManager.colorWhite,
+                BlendMode.srcIn,
+              ),
+              width: AppSize.s22,
+              height: AppSize.s22,
+            ),
+          ),
+          SizedBox(width: AppSize.s8),
+        ],
+        if (onNotificationPressed != null)
+          Container(
+            width: AppSize.s40,
+            height: AppSize.s40,
+            padding: EdgeInsets.all(AppSize.s8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(AppSize.s16),
+              color: ColorManager.colorAppBarIconCircle,
+            ),
+            child: SvgPicture.asset(
+              IconsAssets.notificationIcon,
+              colorFilter: const ColorFilter.mode(
+                ColorManager.colorWhite,
+                BlendMode.srcIn,
+              ),
+              width: AppSize.s22,
+              height: AppSize.s22,
+            ),
+          ),
+        SizedBox(width: AppSize.s20),
+      ],
     );
   }
 

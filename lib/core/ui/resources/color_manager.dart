@@ -1,23 +1,33 @@
 import 'package:flutter/material.dart';
 
 abstract class ColorManager {
-  static const Color colorPrimary = Color(0xff1D3557);
-  static const Color colorSecondary = Color(0xff457B9D);
-  static const Color colorThird = Color(0xffA8DADC);
+  static const Color colorPrimary = Color(0xff010429);
+  static const Color colorSecondary = Color(0xff1A161F);
+  static const Color colorThird = Color(0xff3ABBEC);
+
+  static const Color colorAppBarBackground = Color(0xff1C1C28);
+
+  static const Color colorAppBarSubtitle = Color(0xFFAAAAAA);
+
+  static Color colorAppBarIconCircle = Color(0xFFF9F9F9).withValues(alpha: 0.2);
 
   static const Color colorBlue200 = Color(0xFF7BA1B9);
 
   static const Color colorBackground = Color(0xffffffff);
   static const Color colorDarkBackground = Color(0xffEFEFEF);
 
-  static const Color colorFontPrimary = Color(0xFF202020);
-  static const Color colorFontSecondary = Color(0xFF747474);
+  static const Color colorFontPrimary = Color(0xFFFFFFFF);
+  static Color colorFontSecondary = Color(0xFFF9F9F9).withValues(alpha: 0.7);
 
   static const Color colorSuccess = Color(0xFF4caf50);
 
   static Color colorTextFieldFill = Color(0xFFfcfcfc);
-  static Color colorTextFieldEnabledBorder = Color(0xffe5e7eb).withValues(alpha: 0.9);
-  static Color colorTextFieldFocusedBorder = Color(0xffe5e7eb).withValues(alpha: 0.9);
+  static Color colorTextFieldEnabledBorder = Color(
+    0xffe5e7eb,
+  ).withValues(alpha: 0.9);
+  static Color colorTextFieldFocusedBorder = Color(
+    0xffe5e7eb,
+  ).withValues(alpha: 0.9);
   static Color colorTextFieldErrorBorder = const Color(0xFFe23a31);
 
   static const Color colorGrey0 = Color(0xFFEAEAEA);

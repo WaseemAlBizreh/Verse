@@ -3,9 +3,13 @@ import 'package:injectable/injectable.dart';
 
 part 'home_state.dart';
 
-@injectable
+@lazySingleton
 class HomeCubit extends Cubit<HomeState> {
   HomeCubit() : super(const HomeState());
+
+  void getHomeData() {
+    // TODO: fetch home data
+  }
 
   void logout() {}
 }

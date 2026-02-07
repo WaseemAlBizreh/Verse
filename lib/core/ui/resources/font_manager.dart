@@ -4,7 +4,7 @@ import '../../../main.dart';
 
 abstract class FontManager {
   static const String _arabicFontFamily = 'Tajawal';
-  static const String _englishFontFamily = 'Poppins';
+  static const String _englishFontFamily = 'Lato';
 
   static String getFontFamily(String languageCode) {
     switch (languageCode) {

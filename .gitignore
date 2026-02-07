@@ -39,6 +39,10 @@ app.*.symbols
 # Obfuscation related
 app.*.map.json
 
+# Generated code (injectable, auto_route)
+lib/core/config/injection.config.dart
+lib/core/ui/routes/router.gr.dart
+
 # Android Studio will place build artifacts here
 /android/app/debug
 /android/app/profile

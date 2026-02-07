@@ -109,14 +109,14 @@ class LightModeTheme implements MainThemeApp {
     ),
     dividerTheme: DividerThemeData(color: ColorManager.colorGrey1),
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
-      backgroundColor: ColorManager.colorWhite,
+      backgroundColor: ColorManager.colorSecondary,
       type: BottomNavigationBarType.fixed,
-      selectedItemColor: ColorManager.colorPrimary,
+      selectedItemColor: ColorManager.colorThird,
       unselectedItemColor: ColorManager.colorGrey2,
       selectedLabelStyle: TextStyle(
         fontWeight: FontWeight.w500,
         fontSize: FontSize.s12,
-        color: ColorManager.colorPrimary,
+        color: ColorManager.colorThird,
       ),
       unselectedLabelStyle: TextStyle(
         fontWeight: FontWeight.w400,

@@ -1,0 +1,28 @@
+---
+description: Flutter development standards when creating or editing pages, widgets, and features
+globs: **/*.dart
+alwaysApply: false
+---
+
+# Flutter Development Rules (Page / Screen Creation)
+
+Follow **docs/FLUTTER_DEVELOPMENT_RULES.md** for the full guide. Summary:
+
+## Must Do
+- **Responsive**: Use `LayoutBuilder`, `MediaQuery`, or `lib/core/ui/extensions/`.
+- **Theme**: Use `Theme.of(context).textTheme`; no hardcoded font sizes or text styles.
+- **Colors**: Use `lib/core/ui/resources/color_manager.dart` only; no `Colors.*` or hex in UI.
+- **Assets**: Use `lib/core/ui/resources/asset_manger.dart`; no direct asset paths in UI.
+- **Localization**: All user-facing text via `'key'.tr()`; no hardcoded strings.
+- **Reusable widgets**: Used more than once → `lib/core/ui/widgets/`.
+- **Utils**: Helpers → `lib/core/utils/`; none inside UI widgets.
+- **State**: Cubit + BlocProvider; one Cubit per screen unless shared.
+- **Network**: All API via `lib/core/services/network_service/api_service.dart`; responses as `AppResponse<T>`.
+- **Layers**: Data Source (API/parsing only) → Repository (mapping, errors) → Cubit → UI. No UI → Data Source.
+
+## Must Not
+- No hardcoded colors, text, or assets.
+- No network calls in UI or business logic in widgets.
+- No layer skipping; no duplicated widgets instead of reusable ones.
+
+Refactor immediately if generated code violates these rules.
