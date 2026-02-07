@@ -37,7 +37,8 @@ class CustomCachedNetworkImage extends StatelessWidget {
       fit: fit,
       placeholder: (context, url) =>
           placeholder ?? _DefaultPlaceholder(borderRadius ?? AppSize.s8),
-      errorWidget: (context, url, error) => errorWidget ?? DefaultErrorWidget(),
+      errorWidget: (context, url, error) =>
+          errorWidget ?? DefaultErrorWidget(height: height, width: width),
       errorListener: (value) => log("$value"),
       imageBuilder: (context, imageProvider) => Container(
         width: width,
@@ -93,11 +94,7 @@ class DefaultErrorWidget extends StatelessWidget {
         color: ColorManager.colorWhite,
         borderRadius: BorderRadius.circular(borderRadius ?? AppSize.s8),
       ),
-      child: Image.asset(
-        ImageAssets.placeholderImage,
-        width: width,
-        height: height,
-      ),
+      child: Image.asset(ImageAssets.movieImage, width: width, height: height),
     );
   }
 }

@@ -1,0 +1,122 @@
+---
+description: API calls in Cubit, LoadingState usage, shimmer for loading, placeholder for empty, feature models, API implementation workflow
+globs: **/*.dart
+alwaysApply: false
+---
+
+# API, Loading & Empty States
+
+## 0. API Implementation Workflow (When User Asks to Code an API)
+
+Follow this order and apply all other rules (flutter-development, feature models, etc.):
+
+### Step 1: Endpoint → Data Source → Repository
+
+1. **Add endpoint** in `lib/core/services/network_service/end_points.dart`.
+2. **Data Source**: implement API call in the feature's `data/data_source/` (e.g. `*_remote_ds.dart`). Use `locator<ApiService>().request()` with the endpoint, map `AppResponse` to domain model or handle errors with `fold`.
+3. **Repository**: implement in `data/repositories/` (e.g. `*_repo_imp.dart`). Call DS, map/transform data, return `Either`.
+
+### Step 2: Cubit + Models + LoadingState
+
+1. **Models** in `lib/features/<feature>/models/`:
+   - **GET / load data** → create a model for the response (e.g. `ItemModel`).
+   - **POST / send data** → create a DTO model for the request body.
+2. **Cubit**: add state with `LoadingState` and functions:
+   - Load data: `Future<void> loadData()` — emit `loading` → call repo → emit `doneWithData` / `doneWithNoData` / `hasError`.
+   - Send data (POST): `Future<void> submit(DtoModel dto)` — emit `loading` → call repo → emit `doneWithData` / `hasError`.
+3. **Page**: use `BlocBuilder`, switch on `state.loadingState` to render UI.
+
+### Step 3: UI Design + Shimmer + Empty Placeholder
+
+1. Use **existing design** from the project when applicable; otherwise design a suitable layout.
+2. **Shimmer**: when `loadingState == LoadingState.loading`, show shimmer (use `ColorManager.shimmerBaseColor`, `ColorManager.shimmerHighlightColor`).
+3. **BlocBuilder**: handle `loading` | `doneWithData` | `doneWithNoData` | `hasError`.
+4. **Empty placeholder**: when `doneWithNoData`, show `EmptyStatePlaceholder` or similar (icon + localized message via `'key'.tr()`).
+5. Follow **flutter-development** rules: theme, colors, assets, localization, responsive layout.
+
+---
+
+## 1. API in Cubit + LoadingState
+
+When connecting to an API:
+
+- **Put the fetch logic in the Cubit** — call API from Cubit, never from the page/widget.
+- **Use `LoadingState`** from `lib/core/models/enums/loading_state_enum.dart` in the Cubit state.
+
+```dart
+// Cubit state
+class MyState {
+  final LoadingState loadingState;
+  final List<Item>? items;
+  final String? errorMessage;
+}
+
+// Cubit — call API, emit loading/done/error
+Future<void> fetchData() async {
+  emit(state.copyWith(loadingState: LoadingState.loading));
+  final res = await _repo.getData();
+  res.fold(
+    (e) => emit(state.copyWith(loadingState: LoadingState.hasError, errorMessage: e)),
+    (data) => emit(state.copyWith(
+      loadingState: data.isEmpty ? LoadingState.doneWithNoData : LoadingState.doneWithData,
+      items: data,
+    )),
+  );
+}
+```
+
+**In the page**: use `BlocBuilder` (or `BlocConsumer`) and switch on `loadingState` to show loading, content, empty, or error UI.
+
+---
+
+## 2. Shimmer for Loading
+
+When `loadingState == LoadingState.loading`, show a **shimmer** placeholder, not a spinner.
+
+- Use `ColorManager.shimmerBaseColor` and `ColorManager.shimmerHighlightColor` from `lib/core/ui/resources/color_manager.dart`.
+- Use the existing `Shimmer.fromColors` pattern (e.g. as in `custom_cached_image.dart`).
+- Match the shimmer layout to the final content (cards, list items, etc.).
+
+```dart
+// Example shimmer skeleton matching list item layout
+Shimmer.fromColors(
+  baseColor: ColorManager.shimmerBaseColor,
+  highlightColor: ColorManager.shimmerHighlightColor,
+  child: /* Skeleton matching your list/grid layout */,
+)
+```
+
+---
+
+## 3. Placeholder for Empty Page
+
+When `loadingState == LoadingState.doneWithNoData`, show a **placeholder** widget for the empty state.
+
+- Create a dedicated empty-state widget (icon + message).
+- Use `'key'.tr()` for the message.
+- Use `ImageAssets.placeholderImage` or similar from `lib/core/ui/resources/asset_manger.dart` when an illustration is needed.
+
+```dart
+// Empty state placeholder
+if (state.loadingState == LoadingState.doneWithNoData)
+  EmptyStatePlaceholder(
+    icon: Icons.inbox_outlined,
+    message: 'empty_list'.tr(),
+  )
+```
+
+---
+
+## 4. Feature Models
+
+Place **feature-specific models** in the feature's `models` folder:
+
+```
+lib/features/<feature_name>/models/
+  - item_model.dart
+  - movie_model.dart
+  ...
+```
+
+- Use `lib/features/<feature>/models/` for models used only by that feature (e.g. API response models, DTOs).
+- Use `lib/core/models/` only for shared models used across multiple features.

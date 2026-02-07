@@ -32,8 +32,8 @@ _i174.GetIt $initGetIt(
   gh.singleton<_i623.ApiService>(() => _i623.ApiService());
   gh.singleton<_i165.PermissionService>(() => _i165.PermissionService());
   gh.singleton<_i148.RootCubit>(() => _i148.RootCubit());
-  gh.lazySingleton<_i9.HomeCubit>(() => _i9.HomeCubit());
   gh.lazySingleton<_i379.HomeRemoteDS>(() => _i379.HomeRemoteDsImpl());
   gh.lazySingleton<_i1021.HomeRepo>(() => _i359.HomeRepoImpl());
+  gh.lazySingleton<_i9.HomeCubit>(() => _i9.HomeCubit(gh<_i1021.HomeRepo>()));
   return getIt;
 }

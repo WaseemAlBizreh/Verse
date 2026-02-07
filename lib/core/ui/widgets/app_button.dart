@@ -14,7 +14,7 @@ class AppButton extends StatelessWidget {
     this.fontColor = Colors.white,
     this.onPressed,
     this.padding,
-    this.radius = 20,
+    this.radius = 12,
     this.fontSize,
     this.fontWeight = FontWeight.bold,
     this.textDirection,
@@ -44,7 +44,7 @@ class AppButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: BoxConstraints(minHeight: minHeight ?? AppSize.s45),
+      constraints: BoxConstraints(minHeight: minHeight ?? AppSize.s40),
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(radius ?? AppSize.s12),

@@ -1,6 +1,7 @@
 abstract class ImageAssets {
   static const String userImage = "assets/images/user_image.png";
   static const String placeholderImage = "assets/images/placeholder_image.png";
+  static const String movieImage = "assets/images/movie_placeholder.png";
   static const String logoImage = "assets/images/logo_image.png";
 }
 

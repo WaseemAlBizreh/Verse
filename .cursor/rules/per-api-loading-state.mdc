@@ -1,0 +1,166 @@
+---
+description: One loading state and one API function per endpoint; do not merge. Per-section BlocBuilder and AppResponse meta for pagination.
+globs: "**/*.dart"
+alwaysApply: false
+---
+
+# Per-API Loading State (Do Not Merge)
+
+Use **one loading state and one API function per endpoint**. Do not merge multiple APIs into a single loading state or a single fetch function.
+
+## 1. State: one LoadingState per API
+
+In the Cubit state, define a dedicated `LoadingState` (and optional error message) per API:
+
+```dart
+class HomeState {
+  const HomeState({
+    this.slidersLoadingState = LoadingState.idle,
+    this.moviesLoadingState = LoadingState.idle,
+    this.sliders = const [],
+    this.movies = const [],
+    this.slidersErrorMessage,
+    this.moviesErrorMessage,
+  });
+
+  final LoadingState slidersLoadingState;
+  final LoadingState moviesLoadingState;
+  final List<SliderModel> sliders;
+  final List<MovieModel> movies;
+  final String? slidersErrorMessage;
+  final String? moviesErrorMessage;
+  // copyWith for all fields
+}
+```
+
+## 2. Cubit: one API function per endpoint
+
+Each API has its own function. Optionally guard with "if loading return". Emit only that section’s loading state and data/error.
+
+```dart
+Future<void> getSliders() async {
+  if (state.slidersLoadingState == LoadingState.loading) return;
+
+  emit(state.copyWith(
+    slidersLoadingState: LoadingState.loading,
+    slidersErrorMessage: null,
+  ));
+
+  final result = await _repo.getSliders();
+
+  result.fold(
+    (error) => emit(state.copyWith(
+      slidersLoadingState: LoadingState.hasError,
+      slidersErrorMessage: error.toString(),
+    )),
+    (sliders) => emit(state.copyWith(
+      slidersLoadingState: sliders.isEmpty
+          ? LoadingState.doneWithNoData
+          : LoadingState.doneWithData,
+      sliders: sliders,
+      slidersErrorMessage: null,
+    )),
+  );
+}
+
+Future<void> getMovies() async {
+  if (state.moviesLoadingState == LoadingState.loading) return;
+
+  emit(state.copyWith(
+    moviesLoadingState: LoadingState.loading,
+    moviesErrorMessage: null,
+  ));
+
+  final result = await _repo.getMovies();
+
+  result.fold(
+    (error) => emit(state.copyWith(
+      moviesLoadingState: LoadingState.hasError,
+      moviesErrorMessage: error.toString(),
+    )),
+    (movies) => emit(state.copyWith(
+      moviesLoadingState: movies.isEmpty
+          ? LoadingState.doneWithNoData
+          : LoadingState.doneWithData,
+      movies: movies,
+      moviesErrorMessage: null,
+    )),
+  );
+}
+
+/// Optional: call all section APIs (e.g. for refresh). Each still uses its own loading state.
+Future<void> getHomeData() async {
+  await Future.wait([getSliders(), getMovies()]);
+}
+```
+
+## 3. Page: one BlocBuilder per section
+
+Use a **separate BlocBuilder per section**, switching on **that section’s loading state** (idle/loading → shimmer, doneWithData → content, doneWithNoData/hasError → empty or error).
+
+```dart
+Column(
+  children: [
+    BlocBuilder<HomeCubit, HomeState>(
+      builder: (context, state) {
+        switch (state.slidersLoadingState) {
+          case LoadingState.idle:
+          case LoadingState.loading:
+            return const SliderShimmerWidget();
+          case LoadingState.doneWithData:
+            return SliderCarouselWidget(sliders: state.sliders, ...);
+          case LoadingState.doneWithNoData:
+            return const SizedBox.shrink();
+          case LoadingState.hasError:
+            return Text(state.slidersErrorMessage ?? '');
+        }
+      },
+    ),
+    BlocBuilder<HomeCubit, HomeState>(
+      builder: (context, state) {
+        switch (state.moviesLoadingState) {
+          case LoadingState.idle:
+          case LoadingState.loading:
+            return const TopMoviesShimmerWidget();
+          case LoadingState.doneWithData:
+            return TopMoviesSectionWidget(movies: state.movies);
+          case LoadingState.doneWithNoData:
+          case LoadingState.hasError:
+            return state.moviesLoadingState == LoadingState.hasError
+                ? Text(state.moviesErrorMessage ?? '')
+                : const SizedBox.shrink();
+        }
+      },
+    ),
+  ],
+)
+```
+
+RefreshIndicator can call the “load all” function that invokes each API (e.g. `getHomeData()` which runs `getSliders()` and `getMovies()`).
+
+## 4. AppResponse and pagination meta
+
+`AppResponse` supports optional **meta** for pagination via `MetaModel` (`lib/core/models/meta_model.dart`): `total`, `perPage`, `currentPage`, `lastPage`, plus `hasNextPage` and `hasPreviousPage`.
+
+API shape:
+
+```json
+{
+  "data": [...],
+  "meta": {
+    "total": 12,
+    "per_page": 20,
+    "current_page": 1,
+    "last_page": 1
+  }
+}
+```
+
+Use `response.meta` (type `MetaModel?`) in the data source when mapping; access `meta?.total`, `meta?.currentPage`, etc.
+
+## Summary
+
+- **One loading state per API** (e.g. `slidersLoadingState`, `moviesLoadingState`).
+- **One API function per endpoint** (e.g. `getSliders()`, `getMovies()`); do not merge into a single “getAll” that sets one global loading state.
+- **One BlocBuilder per section** in the page, switching on that section’s loading state.
+- **AppResponse** may include `meta` (total, per_page, current_page, last_page) for pagination; support it on the response without a separate Pagination model.

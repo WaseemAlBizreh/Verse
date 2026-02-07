@@ -17,6 +17,8 @@ class CarouselSliderWidget<T> extends StatelessWidget {
   final int currentIndex;
   final bool showIndicators;
   final int? maxIndicatorCount;
+  final Color? activeIndicatorColor;
+  final Color? inactiveIndicatorColor;
 
   const CarouselSliderWidget({
     super.key,
@@ -32,6 +34,8 @@ class CarouselSliderWidget<T> extends StatelessWidget {
     this.currentIndex = 0,
     this.showIndicators = true,
     this.maxIndicatorCount,
+    this.activeIndicatorColor,
+    this.inactiveIndicatorColor,
   });
 
   @override
@@ -82,8 +86,8 @@ class CarouselSliderWidget<T> extends StatelessWidget {
           height: AppSize.s8,
           decoration: BoxDecoration(
             color: visibleIndex == index
-                ? ColorManager.colorPrimary
-                : ColorManager.colorGrey2,
+                ? (activeIndicatorColor ?? ColorManager.colorPrimary)
+                : (inactiveIndicatorColor ?? ColorManager.colorGrey2),
             borderRadius: BorderRadius.circular(AppSize.s10),
           ),
         );

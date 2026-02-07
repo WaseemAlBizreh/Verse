@@ -160,7 +160,12 @@ class ApiService {
           cancelToken: cancelToken,
         );
       }
-      return Right(AppResponse.fromJson(response.data));
+      return Right(AppResponse.fromJson(
+        response.data,
+        success: response.statusCode != null &&
+            response.statusCode! >= 200 &&
+            response.statusCode! < 300,
+      ));
     } on DioException catch (e) {
       return Left(ErrorHandler.handle(e));
     } on SocketException {
@@ -206,7 +211,12 @@ class ApiService {
         options: options,
         queryParameters: queryParameters,
       );
-      return Right(AppResponse.fromJson(response.data));
+      return Right(AppResponse.fromJson(
+        response.data,
+        success: response.statusCode != null &&
+            response.statusCode! >= 200 &&
+            response.statusCode! < 300,
+      ));
     } on DioException catch (e) {
       return Left(ErrorHandler.handle(e));
     } on SocketException {

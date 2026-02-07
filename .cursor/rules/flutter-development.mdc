@@ -14,7 +14,8 @@ Follow **docs/FLUTTER_DEVELOPMENT_RULES.md** for the full guide. Summary:
 - **Colors**: Use `lib/core/ui/resources/color_manager.dart` only; no `Colors.*` or hex in UI.
 - **Assets**: Use `lib/core/ui/resources/asset_manger.dart`; no direct asset paths in UI.
 - **Localization**: All user-facing text via `'key'.tr()`; no hardcoded strings.
-- **Reusable widgets**: Used more than once → `lib/core/ui/widgets/`.
+- **Page widgets**: Every widget used by a page → `lib/features/<feature>/presentation/widgets/`. Do not define widgets inline in the page file.
+- **Reusable widgets**: Used in multiple features → `lib/core/ui/widgets/`.
 - **Utils**: Helpers → `lib/core/utils/`; none inside UI widgets.
 - **State**: Cubit + BlocProvider; one Cubit per screen unless shared.
 - **Network**: All API via `lib/core/services/network_service/api_service.dart`; responses as `AppResponse<T>`.
