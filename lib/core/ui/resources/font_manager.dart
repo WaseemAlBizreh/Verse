@@ -42,11 +42,14 @@ abstract class FontSize {
 }
 
 class _AdaptiveFontSize {
+  /// Max scale factor so fonts don't grow too large on web/tablet (e.g. 1920px would otherwise ~5x).
+  static const double _maxScaleFactor = 1.25;
+
   static double getFontSize(double baseFontSize) {
     if (MyApp.appContext == null) return baseFontSize;
     double screenWidth = MediaQuery.sizeOf(MyApp.appContext!).width;
     const double baseScreenWidth = 375.0; // Standard screen width
-    double scaleFactor = screenWidth / baseScreenWidth;
+    double scaleFactor = (screenWidth / baseScreenWidth).clamp(1.0, _maxScaleFactor);
     return baseFontSize * scaleFactor;
   }
 }

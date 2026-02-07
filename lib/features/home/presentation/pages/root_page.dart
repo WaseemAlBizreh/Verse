@@ -6,14 +6,14 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/config/injection.dart';
 import '../../../../core/ui/resources/asset_manger.dart';
+import '../../../../core/ui/resources/breakpoints.dart';
 import '../../../../core/ui/resources/color_manager.dart';
+import '../../../../core/ui/resources/font_manager.dart';
 import '../../../../core/ui/resources/values_manager.dart';
 import '../../../../core/ui/routes/router.gr.dart';
 import '../../../../core/ui/widgets/custom_app_bar.dart';
 import '../cubit/home_cubit.dart';
 import '../cubit/root_cubit.dart';
-
-const double _kWebBreakpoint = 900;
 
 @RoutePage()
 class RootPage extends StatelessWidget {
@@ -42,9 +42,9 @@ class RootPage extends StatelessWidget {
         ],
         child: BlocBuilder<RootCubit, RootState>(
           builder: (context, state) {
-            final isWeb = MediaQuery.sizeOf(context).width >= _kWebBreakpoint;
-            final scaffoldKey = state.scaffoldKey!;
-            if (isWeb) {
+            final isWeb = context.screenWidth >= Breakpoints.medium;
+            final scaffoldKey = state.scaffoldKey;
+            if (isWeb && scaffoldKey != null) {
               return _WebRootLayout(
                 scaffoldKey: scaffoldKey,
                 notificationState: state,
@@ -163,7 +163,7 @@ class _MobileNavBar extends StatelessWidget {
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         color: ColorManager.colorThird,
                         fontWeight: FontWeight.w500,
-                        fontSize: 12,
+                        fontSize: FontSize.s12,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -207,17 +207,18 @@ class _WebRootLayout extends StatelessWidget {
             _WebSideBar(width: _sidebarWidth, tabsRouter: tabsRouter),
             Expanded(
               child: Container(
-                color: const Color(0xFF0D1B2A),
+                color: ColorManager.colorPrimary,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CustomAppBar(
-                      title: Text(
-                        RootPage.navItems[tabsRouter.activeIndex].name.tr(),
+                    if (tabsRouter.activeIndex != 0)
+                      CustomAppBar(
+                        title: Text(
+                          RootPage.navItems[tabsRouter.activeIndex].name.tr(),
+                        ),
+                        showBackButton: false,
+                        onNotificationPressed: () {},
                       ),
-                      showBackButton: false,
-                      onNotificationPressed: () {},
-                    ),
                     Expanded(child: child),
                   ],
                 ),

@@ -9,7 +9,7 @@ alwaysApply: false
 Follow **docs/FLUTTER_DEVELOPMENT_RULES.md** for the full guide. Summary:
 
 ## Must Do
-- **Responsive**: Use `LayoutBuilder`, `MediaQuery`, or `lib/core/ui/extensions/`.
+- **Responsive**: Use `LayoutBuilder`, `MediaQuery`, or `lib/core/ui/extensions/`. For **web and Android TV**, follow **large-screen-responsive** rule: use different widgets/layouts for large screens, not just scaling.
 - **Theme**: Use `Theme.of(context).textTheme`; no hardcoded font sizes or text styles.
 - **Colors**: Use `lib/core/ui/resources/color_manager.dart` only; no `Colors.*` or hex in UI.
 - **Assets**: Use `lib/core/ui/resources/asset_manger.dart`; no direct asset paths in UI.

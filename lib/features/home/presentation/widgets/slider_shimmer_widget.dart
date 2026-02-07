@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../../../../core/ui/resources/breakpoints.dart';
 import '../../../../core/ui/resources/color_manager.dart';
 import '../../../../core/ui/resources/values_manager.dart';
 
@@ -9,8 +10,10 @@ class SliderShimmerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.sizeOf(context).width;
-    final cardHeight = screenWidth * 0.55;
+    final sliderHeight = context.height16x9.clamp(
+      AppSize.sHeight * 0.22,
+      AppSize.sHeight * 0.45,
+    );
 
     return Padding(
       padding: EdgeInsets.symmetric(
@@ -23,7 +26,7 @@ class SliderShimmerWidget extends StatelessWidget {
         child: Column(
           children: [
             Container(
-              height: cardHeight,
+              height: sliderHeight,
               margin: EdgeInsets.only(bottom: AppSize.s24),
               decoration: BoxDecoration(
                 color: ColorManager.colorGrey1,

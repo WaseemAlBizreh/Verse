@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../core/ui/resources/breakpoints.dart';
 import '../../../../core/ui/resources/color_manager.dart';
 import '../../../../core/ui/resources/values_manager.dart';
 import '../../models/movie_model.dart';
@@ -18,19 +19,25 @@ class TopMoviesSectionWidget extends StatelessWidget {
   final void Function(MovieModel movie)? onMovieTap;
   final void Function(MovieModel movie)? onFavouriteTap;
 
-  static double get _cardWidth => AppSize.sWidth * 0.75;
-  static double get _cardHeight => AppSize.sHeight * 0.2;
-
   @override
   Widget build(BuildContext context) {
+    final isLarge = context.isLargeScreen;
+    // Mobile: ~1.3 cards visible; large / TV: fixed width so multiple cards, 16:9-friendly row height
+    final cardWidth = isLarge
+        ? (context.screenWidth * 0.18).clamp(200.0, 320.0)
+        : context.screenWidth * 0.75;
+    final cardHeight = isLarge
+        ? (cardWidth / (16 / 9)).clamp(100.0, 180.0) // poster-ish ratio for row
+        : AppSize.sHeight * 0.2;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: EdgeInsets.fromLTRB(
-            AppSize.s16,
+            isLarge ? 24 : AppSize.s16,
             AppSize.s20,
-            AppSize.s16,
+            isLarge ? 24 : AppSize.s16,
             AppSize.s12,
           ),
           child: Text(
@@ -42,20 +49,20 @@ class TopMoviesSectionWidget extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: _cardHeight + AppSize.s12,
+          height: cardHeight + AppSize.s12,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
-            padding: EdgeInsets.symmetric(horizontal: AppSize.s16),
+            padding: EdgeInsets.symmetric(horizontal: isLarge ? 24 : AppSize.s16),
             itemCount: movies.length,
-            separatorBuilder: (_, __) => SizedBox(width: AppSize.s12),
+            separatorBuilder: (_, __) => SizedBox(width: isLarge ? 16 : AppSize.s12),
             itemBuilder: (context, index) {
               final movie = movies[index];
               return SizedBox(
-                width: _cardWidth,
+                width: cardWidth,
                 child: MovieCardWidget(
                   movie: movie,
-                  width: _cardWidth,
-                  height: _cardHeight,
+                  width: cardWidth,
+                  height: cardHeight,
                   isHorizontalListItem: true,
                   onTap: onMovieTap != null ? () => onMovieTap!(movie) : null,
                   onFavouriteTap: onFavouriteTap != null

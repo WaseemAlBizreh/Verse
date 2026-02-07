@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:verse/core/ui/resources/font_manager.dart';
 
+import '../../../../core/ui/resources/breakpoints.dart';
 import '../../../../core/ui/resources/color_manager.dart';
 import '../../../../core/ui/resources/values_manager.dart';
 import '../../../../core/ui/widgets/app_button.dart';
@@ -23,13 +24,17 @@ class SliderCarouselWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.sizeOf(context).width;
-    final cardHeight = screenWidth * 0.55;
+    // 16:9 aspect ratio for TV / wide screens; cap by viewport height on narrow screens
+    final sliderHeight = context.height16x9.clamp(
+      AppSize.sHeight * 0.22,
+      AppSize.sHeight * 0.45,
+    );
+    final viewportFraction = context.isLargeScreen ? 0.85 : 0.9;
 
     return CarouselSliderWidget<SliderModel>(
       items: sliders,
-      height: AppSize.sHeight * 0.25,
-      viewportFraction: 0.9,
+      height: sliderHeight,
+      viewportFraction: viewportFraction,
       autoPlay: true,
       autoPlayInterval: const Duration(seconds: 5),
       currentIndex: currentIndex,
@@ -37,7 +42,7 @@ class SliderCarouselWidget extends StatelessWidget {
       activeIndicatorColor: ColorManager.colorThird,
       inactiveIndicatorColor: ColorManager.colorGrey2.withValues(alpha: 0.5),
       itemBuilder: (context, slider, index) {
-        return _SliderCard(slider: slider, height: cardHeight);
+        return _SliderCard(slider: slider, height: sliderHeight);
       },
     );
   }

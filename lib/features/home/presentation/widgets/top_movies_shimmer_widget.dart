@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../../../../core/ui/resources/breakpoints.dart';
 import '../../../../core/ui/resources/color_manager.dart';
 import '../../../../core/ui/resources/values_manager.dart';
 
 class TopMoviesShimmerWidget extends StatelessWidget {
   const TopMoviesShimmerWidget({super.key});
 
-  static double get _cardWidth => AppSize.sWidth * 0.82;
-  static double get _cardHeight => AppSize.sHeight * 0.2;
-
   @override
   Widget build(BuildContext context) {
     const int itemCount = 4;
+    final isLarge = context.isLargeScreen;
+    final cardWidth = isLarge
+        ? (context.screenWidth * 0.18).clamp(200.0, 320.0)
+        : context.screenWidth * 0.82;
+    final cardHeight = isLarge
+        ? (cardWidth / (16 / 9)).clamp(100.0, 180.0)
+        : AppSize.sHeight * 0.2;
 
     return Shimmer.fromColors(
       baseColor: ColorManager.shimmerBaseColor,
@@ -22,13 +27,13 @@ class TopMoviesShimmerWidget extends StatelessWidget {
         children: [
           Padding(
             padding: EdgeInsets.fromLTRB(
-              AppSize.s16,
+              isLarge ? 24 : AppSize.s16,
               AppSize.s20,
-              AppSize.s16,
+              isLarge ? 24 : AppSize.s16,
               AppSize.s12,
             ),
             child: Container(
-              width: AppSize.sWidth * 0.4,
+              width: context.screenWidth * (isLarge ? 0.2 : 0.4),
               height: AppSize.s24,
               decoration: BoxDecoration(
                 color: ColorManager.colorGrey1,
@@ -37,19 +42,19 @@ class TopMoviesShimmerWidget extends StatelessWidget {
             ),
           ),
           SizedBox(
-            height: _cardHeight + AppSize.s12,
+            height: cardHeight + AppSize.s12,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
-              padding: EdgeInsets.symmetric(horizontal: AppSize.s16),
+              padding: EdgeInsets.symmetric(horizontal: isLarge ? 24 : AppSize.s16),
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: itemCount,
-              separatorBuilder: (_, __) => SizedBox(width: AppSize.s12),
+              separatorBuilder: (_, __) => SizedBox(width: isLarge ? 16 : AppSize.s12),
               itemBuilder: (_, __) => SizedBox(
-                width: _cardWidth,
+                width: cardWidth,
                 child: _ShimmerCard(
-                  width: _cardWidth,
-                  height: _cardHeight,
+                  width: cardWidth,
+                  height: cardHeight,
                 ),
               ),
             ),

@@ -1,0 +1,62 @@
+---
+description: Large-screen (web, Android TV) responsive rules — use different widgets and layouts for big screens
+globs: **/*.dart
+alwaysApply: false
+---
+
+# Large-Screen Responsive (Web & Android TV)
+
+When building or editing **pages and widgets**, treat **large screens** (web, tablet, Android TV) as a different form factor: use **different widgets/layouts**, not just scaled-up mobile UI.
+
+## Breakpoints
+
+Use consistent breakpoints (define in `lib/core/ui/resources/values_manager.dart` or a dedicated `breakpoints.dart`):
+
+| Name        | Min width | Use case              |
+|------------|-----------|------------------------|
+| Small      | &lt; 600   | Phone                  |
+| Medium     | 600–900   | Tablet / large phone   |
+| Large      | 900–1200  | Web desktop, small TV  |
+| ExtraLarge | ≥ 1200    | Wide web, Android TV   |
+
+Existing pattern in project: `MediaQuery.sizeOf(context).width >= 900` for web (see `root_page.dart`). Prefer shared constants instead of magic numbers.
+
+## Must Do
+
+1. **Branch by screen size**
+   - Use `MediaQuery.sizeOf(context).width` (or a helper) to choose layout.
+   - Prefer **separate widget classes** for small vs large (e.g. `_MobileNavBar` vs `_WebRootLayout` in `root_page.dart`), instead of one widget full of `if (isLarge) ... else ...`.
+
+2. **Different widgets for large screens**
+   - **Lists/grids**: more columns on large screens; consider horizontal scrolling sections on TV.
+   - **Cards**: larger cards, more info visible, different aspect ratios on TV.
+   - **Navigation**: sidebar on web/TV (as in `_WebSideBar`), bottom nav on mobile.
+   - **Dialogs/sheets**: centered, max-width on web; full-width or bottom sheet on mobile.
+
+3. **Android TV / 10-foot UI**
+   - Assume **D-pad / focus** navigation: ensure focus order and visible focus indicators.
+   - Larger touch/focus targets (min ~48dp) and readable text at distance.
+   - Prefer **grid or horizontal lists** that work with arrow keys; avoid tiny tap targets.
+
+4. **Reuse breakpoint logic**
+   - Centralize "is large screen" / "is TV" in one place (e.g. extension on `BuildContext` or a small helper) and use it across pages and widgets.
+
+## Must Not
+
+- **Do not** only scale the same layout (e.g. same single column everywhere); change **structure** for large screens.
+- **Do not** hardcode breakpoint numbers in every file; use shared constants or extensions.
+- **Do not** assume touch-only on large screens; consider keyboard and D-pad for web and TV.
+
+## Example pattern
+
+```dart
+// In page or parent widget
+final width = MediaQuery.sizeOf(context).width;
+final isLargeScreen = width >= 900;  // or use Breakpoints.large
+
+return isLargeScreen
+    ? _LargeScreenContent(...)   // e.g. grid, sidebar, bigger cards
+    : _SmallScreenContent(...); // e.g. list, bottom nav, compact cards
+```
+
+Keep **small-screen** and **large-screen** widgets in the same feature (e.g. under `presentation/widgets/`) with clear names (e.g. `*_mobile.dart` / `*_desktop.dart` or `*_large_screen.dart`).
